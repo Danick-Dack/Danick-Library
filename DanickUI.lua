@@ -96,9 +96,22 @@ function UI:CreateWindow(titleText)
 		btn.Font = Enum.Font.Gotham
 		btn.TextSize = 14
 
-		local tabFrame = Instance.new("Frame", content)
+		local tabFrame = Instance.new("ScrollingFrame", content)
 		tabFrame.Size = UDim2.new(1,0,1,0)
+		tabFrame.CanvasSize = UDim2.new(0,0,0,0)
+		tabFrame.ScrollBarThickness = 4
+		tabFrame.BackgroundTransparency = 1
 		tabFrame.Visible = false
+		
+		-- GRID (самое важное)
+		local grid = Instance.new("UIGridLayout", tabFrame)
+		grid.CellSize = UDim2.new(0,240,0,150)
+		grid.CellPadding = UDim2.new(0,10,0,10)
+		
+		-- АВТО РАЗМЕР СКРОЛЛА
+		grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			tabFrame.CanvasSize = UDim2.new(0,0,0,grid.AbsoluteContentSize.Y + 10)
+		end)
 
 		table.insert(tabs, tabFrame)
 
