@@ -72,6 +72,11 @@ function UI:CreateWindow(titleText)
 	content.Position = UDim2.new(0,155,0,5)
 	content.BackgroundTransparency = 1
 
+	local layout = Instance.new("UIGridLayout", tabFrame)
+	layout.CellSize = UDim2.new(0,240,0,150)
+	layout.CellPadding = UDim2.new(0,10,0,10)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+
 	local tabs = {}
 	local currentTab = nil
 
