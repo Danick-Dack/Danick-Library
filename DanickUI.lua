@@ -205,17 +205,3 @@ function UI:CreateWindow(titleText)
 
 	return UI
 end
-
--- ПРИМЕР
-local Window = UI:CreateWindow("My Hub")
-
-local Tab = UI:CreateTab("Main")
-local Section = Tab:CreateSection("Player")
-
-Section:CreateToggle("Speed Hack", function(v)
-	print("Speed:", v)
-end)
-
-Section:CreateToggle("Auto Farm", function(v)
-	print("Farm:", v)
-end)
