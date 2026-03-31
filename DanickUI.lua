@@ -4,6 +4,7 @@ function UI:CreateWindow(titleText)
 	local player = game.Players.LocalPlayer
 	local UIS = game:GetService("UserInputService")
 
+	-- удалить старый
 	if player.PlayerGui:FindFirstChild("CustomHub") then
 		player.PlayerGui.CustomHub:Destroy()
 	end
@@ -12,6 +13,7 @@ function UI:CreateWindow(titleText)
 	gui.Name = "CustomHub"
 	gui.ResetOnSpawn = false
 
+	-- MAIN
 	local main = Instance.new("Frame", gui)
 	main.Size = UDim2.new(0, 650, 0, 360)
 	main.Position = UDim2.new(0.5, -325, 0.5, -180)
@@ -53,6 +55,21 @@ function UI:CreateWindow(titleText)
 		end
 	end)
 
+	-- CLOSE
+	local close = Instance.new("TextButton", main)
+	close.Size = UDim2.new(0,25,0,25)
+	close.Position = UDim2.new(1,-30,0,5)
+	close.Text = "X"
+	close.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	close.TextColor3 = Color3.new(1,1,1)
+	close.Font = Enum.Font.GothamBold
+	close.TextSize = 14
+	Instance.new("UICorner", close).CornerRadius = UDim.new(0,6)
+
+	close.MouseButton1Click:Connect(function()
+		gui:Destroy()
+	end)
+
 	-- SIDEBAR
 	local sidebar = Instance.new("Frame", main)
 	sidebar.Size = UDim2.new(0,150,1,0)
@@ -67,18 +84,14 @@ function UI:CreateWindow(titleText)
 	title.Font = Enum.Font.GothamBold
 	title.TextSize = 18
 
+	local tabY = 50
+	local tabs = {}
+	local currentTab = nil
+
 	local content = Instance.new("Frame", main)
 	content.Size = UDim2.new(1,-160,1,-10)
 	content.Position = UDim2.new(0,155,0,5)
 	content.BackgroundTransparency = 1
-
-	local layout = Instance.new("UIGridLayout", tabFrame)
-	layout.CellSize = UDim2.new(0,240,0,150)
-	layout.CellPadding = UDim2.new(0,10,0,10)
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
-
-	local tabs = {}
-	local currentTab = nil
 
 	function UI:SwitchTab(tabFrame)
 		for _,t in pairs(tabs) do
@@ -90,6 +103,8 @@ function UI:CreateWindow(titleText)
 	function UI:CreateTab(name)
 		local btn = Instance.new("TextButton", sidebar)
 		btn.Size = UDim2.new(1,0,0,30)
+		btn.Position = UDim2.new(0,0,0,tabY)
+		tabY = tabY + 35
 		btn.Text = name
 		btn.BackgroundTransparency = 1
 		btn.TextColor3 = Color3.fromRGB(200,200,200)
@@ -102,13 +117,11 @@ function UI:CreateWindow(titleText)
 		tabFrame.ScrollBarThickness = 4
 		tabFrame.BackgroundTransparency = 1
 		tabFrame.Visible = false
-		
-		-- GRID (самое важное)
+
 		local grid = Instance.new("UIGridLayout", tabFrame)
 		grid.CellSize = UDim2.new(0,240,0,150)
 		grid.CellPadding = UDim2.new(0,10,0,10)
-		
-		-- АВТО РАЗМЕР СКРОЛЛА
+
 		grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 			tabFrame.CanvasSize = UDim2.new(0,0,0,grid.AbsoluteContentSize.Y + 10)
 		end)
@@ -128,7 +141,6 @@ function UI:CreateWindow(titleText)
 
 		function Tab:CreateSection(name)
 			local section = Instance.new("Frame", tabFrame)
-			section.Size = UDim2.new(0,230,0,150)
 			section.BackgroundColor3 = Color3.fromRGB(25,25,25)
 			Instance.new("UICorner", section).CornerRadius = UDim.new(0,10)
 
@@ -141,7 +153,6 @@ function UI:CreateWindow(titleText)
 			title.TextSize = 14
 
 			local y = 30
-
 			local Section = {}
 
 			function Section:CreateToggle(text, callback)
@@ -153,7 +164,7 @@ function UI:CreateWindow(titleText)
 				lbl.TextColor3 = Color3.fromRGB(220,220,220)
 				lbl.Font = Enum.Font.Gotham
 				lbl.TextSize = 13
-				
+
 				local btn = Instance.new("TextButton", section)
 				btn.Size = UDim2.new(0,40,0,18)
 				btn.Position = UDim2.new(1,-50,0,y+2)
@@ -168,7 +179,7 @@ function UI:CreateWindow(titleText)
 				Instance.new("UICorner", dot).CornerRadius = UDim.new(1,0)
 
 				local state = false
-				
+
 				btn.MouseButton1Click:Connect(function()
 					state = not state
 					if state then
@@ -195,4 +206,16 @@ function UI:CreateWindow(titleText)
 	return UI
 end
 
-return UI
+-- ПРИМЕР
+local Window = UI:CreateWindow("My Hub")
+
+local Tab = UI:CreateTab("Main")
+local Section = Tab:CreateSection("Player")
+
+Section:CreateToggle("Speed Hack", function(v)
+	print("Speed:", v)
+end)
+
+Section:CreateToggle("Auto Farm", function(v)
+	print("Farm:", v)
+end)
