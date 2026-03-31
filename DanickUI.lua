@@ -202,6 +202,6 @@ function UI:CreateWindow(titleText)
 
 		return Tab
 	end
-
-	return UI
 end
+	return UI
+
