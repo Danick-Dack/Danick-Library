@@ -21,6 +21,45 @@ function UI:CreateWindow(titleText)
 	Instance.new("UICorner", main).CornerRadius = UDim.new(0,10)
 	main.BackgroundTransparency = 1
 
+	-- 🔥 MINI HUB
+	local minimized = Instance.new("Frame", gui)
+	minimized.Size = UDim2.new(0,160,0,50)
+	minimized.Position = UDim2.new(0.5,-80,1,-70)
+	minimized.BackgroundColor3 = Color3.fromRGB(20,20,20)
+	minimized.Visible = false
+	Instance.new("UICorner", minimized).CornerRadius = UDim.new(0,10)
+
+	local titleMini = Instance.new("TextLabel", minimized)
+	titleMini.Size = UDim2.new(1,0,0.5,0)
+	titleMini.Text = "My Hub"
+	titleMini.BackgroundTransparency = 1
+	titleMini.TextColor3 = Color3.new(1,1,1)
+	titleMini.Font = Enum.Font.GothamBold
+	titleMini.TextSize = 14
+	local openBtn = Instance.new("TextButton", minimized)
+	openBtn.Size = UDim2.new(0.5,0,0.5,0)
+	openBtn.Position = UDim2.new(0,0,0.5,0)
+	openBtn.Text = "Open"
+	openBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	openBtn.TextColor3 = Color3.new(1,1,1)
+	Instance.new("UICorner", openBtn)
+	local deleteBtn = Instance.new("TextButton", minimized)
+	deleteBtn.Size = UDim2.new(0.5,0,0.5,0)
+	deleteBtn.Position = UDim2.new(0.5,0,0.5,0)
+	deleteBtn.Text = "Delete"
+	deleteBtn.BackgroundColor3 = Color3.fromRGB(120,0,0)
+	deleteBtn.TextColor3 = Color3.new(1,1,1)
+	Instance.new("UICorner", deleteBtn)
+
+	deleteBtn.MouseButton1Click:Connect(function()
+		gui:Destroy()
+	end)
+
+	openBtn.MouseButton1Click:Connect(function()
+		main.Visible = true
+		minimized.Visible = false
+	end)
+
 	game:GetService("TweenService"):Create(main, TweenInfo.new(0.3), {
 		BackgroundTransparency = 0
 	}):Play()
@@ -57,6 +96,7 @@ function UI:CreateWindow(titleText)
 	UIS.InputBegan:Connect(function(input, gp)
 		if not gp and input.KeyCode == Enum.KeyCode.RightShift then
 			main.Visible = not main.Visible
+			minimized.Visible = not main.Visible
 		end
 	end)
 
@@ -72,7 +112,8 @@ function UI:CreateWindow(titleText)
 	Instance.new("UICorner", close).CornerRadius = UDim.new(0,6)
 
 	close.MouseButton1Click:Connect(function()
-		gui:Destroy()
+		main.Visible = false
+		minimized.Visible = true
 	end)
 
 	-- SIDEBAR
@@ -104,39 +145,35 @@ function UI:CreateWindow(titleText)
 
 		for _,t in pairs(tabs) do
 			if t.Visible then
-
-				-- 🔥 ПЛАВНО УБИРАЕМ ВСЁ ВНУТРИ
-				for _,obj in pairs(t:GetDescendants()) do
-					if obj:IsA("Frame") or obj:IsA("TextLabel") or obj:IsA("TextButton") then
+				
+				-- 🔥 плавно скрываем только секции (не всё подряд)
+				for _,obj in pairs(t:GetChildren()) do
+					if obj:IsA("Frame") then
 						TweenService:Create(obj, TweenInfo.new(0.15), {
-							BackgroundTransparency = 1,
-							TextTransparency = 1
+							BackgroundTransparency = 1
 						}):Play()
 					end
 				end
 
-				task.wait(0.15)
+				task.wait(0.12)
 				t.Visible = false
 			end
 		end
 
-		-- 🔥 ВКЛЮЧАЕМ НОВЫЙ ТАБ
 		tabFrame.Visible = true
 
-		-- Сначала делаем всё прозрачным
-		for _,obj in pairs(tabFrame:GetDescendants()) do
-			if obj:IsA("Frame") or obj:IsA("TextLabel") or obj:IsA("TextButton") then
+		-- 🔥 делаем секции невидимыми перед показом
+		for _,obj in pairs(tabFrame:GetChildren()) do
+			if obj:IsA("Frame") then
 				obj.BackgroundTransparency = 1
-				obj.TextTransparency = 1
 			end
 		end
 
-		-- 🔥 ПЛАВНО ПОЯВЛЯЕМ
-		for _,obj in pairs(tabFrame:GetDescendants()) do
-			if obj:IsA("Frame") or obj:IsA("TextLabel") or obj:IsA("TextButton") then
+		-- 🔥 плавно показываем
+		for _,obj in pairs(tabFrame:GetChildren()) do
+			if obj:IsA("Frame") then
 				TweenService:Create(obj, TweenInfo.new(0.2), {
-					BackgroundTransparency = 0,
-					TextTransparency = 0
+					BackgroundTransparency = 0
 				}):Play()
 			end
 		end
