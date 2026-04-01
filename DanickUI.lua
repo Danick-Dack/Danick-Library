@@ -19,11 +19,16 @@ function UI:CreateWindow(titleText)
 	main.Position = UDim2.new(0.5, -325, 0.5, -180)
 	main.BackgroundColor3 = Color3.fromRGB(18,18,18)
 	Instance.new("UICorner", main).CornerRadius = UDim.new(0,10)
+	main.BackgroundTransparency = 1
+
+	game:GetService("TweenService"):Create(main, TweenInfo.new(0.3), {
+		BackgroundTransparency = 0
+	}):Play()
 
 	-- DRAG
 	local dragging, dragStart, startPos
 	main.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
 			dragStart = input.Position
 			startPos = main.Position
@@ -31,7 +36,7 @@ function UI:CreateWindow(titleText)
 	end)
 
 	UIS.InputChanged:Connect(function(input)
-		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 			local delta = input.Position - dragStart
 			main.Position = UDim2.new(
 				startPos.X.Scale,
@@ -93,11 +98,26 @@ function UI:CreateWindow(titleText)
 	content.Position = UDim2.new(0,155,0,5)
 	content.BackgroundTransparency = 1
 
+	local TweenService = game:GetService("TweenService")
+
 	function UI:SwitchTab(tabFrame)
 		for _,t in pairs(tabs) do
-			t.Visible = false
+			if t.Visible then
+				TweenService:Create(t, TweenInfo.new(0.2), {
+					BackgroundTransparency = 1
+				}):Play()
+
+				task.wait(0.1)
+				t.Visible = false
+			end
 		end
+
 		tabFrame.Visible = true
+		tabFrame.BackgroundTransparency = 1
+
+		TweenService:Create(tabFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
+			BackgroundTransparency = 0
+		}):Play()
 	end
 
 	function UI:CreateTab(name)
@@ -184,10 +204,12 @@ function UI:CreateWindow(titleText)
 					state = not state
 					if state then
 						dot:TweenPosition(UDim2.new(1,-16,0,2),"Out","Quad",0.15,true)
-						btn.BackgroundColor3 = Color3.fromRGB(0,170,255)
+						game:GetService("TweenService"):Create(btn, TweenInfo.new(0.15), {
+						BackgroundColor3 = Color3.fromRGB(0,170,255)
+					}):Play()
 					else
 						dot:TweenPosition(UDim2.new(0,2,0,2),"Out","Quad",0.15,true)
-						btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+						game:GetService("TweenService"):Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(60,60,60)}):Play()
 					end
 					if callback then
 						callback(state)
@@ -203,5 +225,18 @@ function UI:CreateWindow(titleText)
 		return Tab
 	end
 end
-	return UI
+	-- MOBILE BUTTON
+	local mobileBtn = Instance.new("TextButton", gui)
+	mobileBtn.Size = UDim2.new(0,50,0,50)
+	mobileBtn.Position = UDim2.new(0,10,0.5,-25)
+	mobileBtn.Text = "UI"
+	mobileBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+	mobileBtn.TextColor3 = Color3.new(1,1,1)
+	mobileBtn.Font = Enum.Font.GothamBold
+	mobileBtn.TextSize = 16
+	Instance.new("UICorner", mobileBtn).CornerRadius = UDim.new(1,0)
 
+	mobileBtn.MouseButton1Click:Connect(function()
+		main.Visible = not main.Visible
+	end)
+return UI
