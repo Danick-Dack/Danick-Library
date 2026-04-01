@@ -101,23 +101,46 @@ function UI:CreateWindow(titleText)
 	local TweenService = game:GetService("TweenService")
 
 	function UI:SwitchTab(tabFrame)
+
 		for _,t in pairs(tabs) do
 			if t.Visible then
-				TweenService:Create(t, TweenInfo.new(0.2), {
-					BackgroundTransparency = 1
-				}):Play()
 
-				task.wait(0.1)
+				-- 🔥 ПЛАВНО УБИРАЕМ ВСЁ ВНУТРИ
+				for _,obj in pairs(t:GetDescendants()) do
+					if obj:IsA("Frame") or obj:IsA("TextLabel") or obj:IsA("TextButton") then
+						TweenService:Create(obj, TweenInfo.new(0.15), {
+							BackgroundTransparency = 1,
+							TextTransparency = 1
+						}):Play()
+					end
+				end
+
+				task.wait(0.15)
 				t.Visible = false
 			end
 		end
 
+		-- 🔥 ВКЛЮЧАЕМ НОВЫЙ ТАБ
 		tabFrame.Visible = true
-		tabFrame.BackgroundTransparency = 1
 
-		TweenService:Create(tabFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {
-			BackgroundTransparency = 0
-		}):Play()
+		-- Сначала делаем всё прозрачным
+		for _,obj in pairs(tabFrame:GetDescendants()) do
+			if obj:IsA("Frame") or obj:IsA("TextLabel") or obj:IsA("TextButton") then
+				obj.BackgroundTransparency = 1
+				obj.TextTransparency = 1
+			end
+		end
+
+		-- 🔥 ПЛАВНО ПОЯВЛЯЕМ
+		for _,obj in pairs(tabFrame:GetDescendants()) do
+			if obj:IsA("Frame") or obj:IsA("TextLabel") or obj:IsA("TextButton") then
+				TweenService:Create(obj, TweenInfo.new(0.2), {
+					BackgroundTransparency = 0,
+					TextTransparency = 0
+				}):Play()
+			end
+		end
+
 	end
 
 	function UI:CreateTab(name)
