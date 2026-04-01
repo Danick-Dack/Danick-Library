@@ -271,6 +271,7 @@ function UI:CreateWindow(titleText)
 	mobileBtn.TextColor3 = Color3.new(1,1,1)
 	mobileBtn.Font = Enum.Font.GothamBold
 	mobileBtn.TextSize = 16
+	mobileBtn.Draggable = true
 	Instance.new("UICorner", mobileBtn).CornerRadius = UDim.new(1,0)
 
 	mobileBtn.MouseButton1Click:Connect(function()
