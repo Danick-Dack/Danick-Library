@@ -42,7 +42,7 @@ function UI:CreateWindow(titleText)
 	openBtn.Text = "Open"
 	openBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
 	openBtn.TextColor3 = Color3.new(1,1,1)
-	Instance.new("UICorner", openBtn)
+	Instance.new("UICorner", openBtn) 
 	local deleteBtn = Instance.new("TextButton", minimized)
 	deleteBtn.Size = UDim2.new(0.5,0,0.5,0)
 	deleteBtn.Position = UDim2.new(0.5,0,0.5,0)
@@ -87,7 +87,7 @@ function UI:CreateWindow(titleText)
 	end)
 
 	UIS.InputEnded:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = false
 		end
 	end)
@@ -95,8 +95,15 @@ function UI:CreateWindow(titleText)
 	-- RIGHT SHIFT
 	UIS.InputBegan:Connect(function(input, gp)
 		if not gp and input.KeyCode == Enum.KeyCode.RightShift then
-			main.Visible = not main.Visible
-			minimized.Visible = not main.Visible
+			
+			if main.Visible then
+				main.Visible = false
+				minimized.Visible = true
+			else
+				main.Visible = true
+				minimized.Visible = false
+			end
+			
 		end
 	end)
 
@@ -144,39 +151,10 @@ function UI:CreateWindow(titleText)
 	function UI:SwitchTab(tabFrame)
 
 		for _,t in pairs(tabs) do
-			if t.Visible then
-				
-				-- 🔥 плавно скрываем только секции (не всё подряд)
-				for _,obj in pairs(t:GetChildren()) do
-					if obj:IsA("Frame") then
-						TweenService:Create(obj, TweenInfo.new(0.15), {
-							BackgroundTransparency = 1
-						}):Play()
-					end
-				end
-
-				task.wait(0.12)
-				t.Visible = false
-			end
+			t.Visible = false
 		end
 
 		tabFrame.Visible = true
-
-		-- 🔥 делаем секции невидимыми перед показом
-		for _,obj in pairs(tabFrame:GetChildren()) do
-			if obj:IsA("Frame") then
-				obj.BackgroundTransparency = 1
-			end
-		end
-
-		-- 🔥 плавно показываем
-		for _,obj in pairs(tabFrame:GetChildren()) do
-			if obj:IsA("Frame") then
-				TweenService:Create(obj, TweenInfo.new(0.2), {
-					BackgroundTransparency = 0
-				}):Play()
-			end
-		end
 
 	end
 
@@ -284,7 +262,6 @@ function UI:CreateWindow(titleText)
 
 		return Tab
 	end
-end
 	-- MOBILE BUTTON
 	local mobileBtn = Instance.new("TextButton", gui)
 	mobileBtn.Size = UDim2.new(0,50,0,50)
@@ -299,4 +276,5 @@ end
 	mobileBtn.MouseButton1Click:Connect(function()
 		main.Visible = not main.Visible
 	end)
+end
 return UI
